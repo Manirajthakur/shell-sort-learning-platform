@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shell Sort Learning Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        code {
+            background-color: #e5e7eb;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #1f2937;
+        }
+        .grid-container {
+            display: grid;
+            gap: 8px;
+            justify-content: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 16px;
+            margin: 20px 0;
+        }
+        
+        .grid-item {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .grid-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .item-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+        
+        .item-index {
+            font-size: 10px;
+            color: #64748b;
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 8px;
+        }
+        
+        /* Animation states */
+        .comparing {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-color: #f59e0b;
+            animation: pulse-compare 1s ease-in-out infinite;
+            transform: translateY(-4px) scale(1.05);
+        }
+        
+        .swapping {
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+            border-color: #ec4899;
+            animation: shake 0.5s ease-in-out;
+            transform: translateY(-6px) scale(1.1);
+        }
+        
+        .gap-highlight {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.3);
+        }
+        
+        .sorted-item {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border-color: #10b981;
+            animation: success-bounce 0.6s ease-out;
+        }
+        
+        .current-element {
+            background: linear-gradient(135deg, #ddd6fe 0%, #c4b5fd 100%);
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.3);
+        }
+        
+        @keyframes pulse-compare {
+            0%, 100% { transform: translateY(-4px) scale(1.05); }
+            50% { transform: translateY(-6px) scale(1.08); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateY(-6px) scale(1.1) rotate(0deg); }
+            25% { transform: translateY(-6px) scale(1.1) rotate(-2deg); }
+            75% { transform: translateY(-6px) scale(1.1) rotate(2deg); }
+        }
+        
+        @keyframes success-bounce {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+        
+        .step-explanation {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 16px;
+            margin: 20px 0;
+        }
+        
+        .gap-indicator {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #f59e0b;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0px); }
+            50% { transform: translateX(-50%) translateY(-5px); }
+        }
+        
+        .concept-box {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-black text-gray-800 mb-4">
+                🎓 Shell Sort Learning Platform
+            </h1>
+            <p class="text-lg text-gray-600 mb-6">
+                Learn Shell Sort Algorithm Step-by-Step with Interactive E-commerce Product Sorting
+            </p>
+            
+            <div class="concept-box text-left max-w-4xl mx-auto divide-y divide-gray-200">
+                <div class="py-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-xl font-bold text-gray-800">🧠 What is Shell Sort?</h3>
+                        <button id="play-intro-btn" title="Play Introduction" class="p-2 bg-blue-100 hover:bg-blue-200 rounded-lg transition-colors">
+                            <span>🔊</span>
+                        </button>
+                    </div>
+                    <p class="text-gray-700">
+                        Shell Sort is an improved version of Insertion Sort. Instead of comparing items next to each other, it compares items separated by a <strong>gap</strong>. The gap starts large and gets smaller, making the final sort very fast.
+                    </p>
+                </div>
+                <div class="py-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-xl font-bold text-gray-800">🤔 How is the Gap Chosen?</h3>
+                         <button id="play-gap-btn" title="Play Gap Explanation" class="p-2 bg-green-100 hover:bg-green-200 rounded-lg transition-colors">
+                            <span>🔊</span>
+                        </button>
+                    </div>
+                    <p class="text-gray-700 mb-2">
+                        The gap isn't random. It follows a specific formula. In this program, we use a simple and common method:
+                    </p>
+                    <ul class="list-decimal list-inside space-y-3 text-gray-700 bg-gray-50 p-4 rounded-lg">
+                        <li>
+                            The <strong>first gap</strong> is calculated with the formula: <code>gap = floor(array size / 2)</code>.
+                            <div class="ml-5 mt-1 text-sm text-gray-600">
+                                This means we always divide by 2 and take the <strong>whole number part</strong>, ignoring any decimals. <br>
+                                <strong>For example:</strong> If the array size is 7, then 7 / 2 = 3.5, so the starting gap is <strong>3</strong>.
+                            </div>
+                        </li>
+                         <li>
+                            After each pass, the <strong>next gap</strong> uses the same formula on the previous gap: <code>gap = floor(previous gap / 2)</code>.
+                             <div class="ml-5 mt-1 text-sm text-gray-600">
+                                <strong>For example:</strong> If the current gap is 3, then 3 / 2 = 1.5, so the next gap is <strong>1</strong>.
+                            </div>
+                        </li>
+                        <li>This continues until the <strong>gap becomes 1</strong>, which performs the final, simple cleanup sort.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+             <div class="flex flex-wrap justify-center items-center gap-4 mb-4">
+                <button id="generate-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-md">
+                    🎲 Generate New Array
+                </button>
+                <button id="start-sort" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-md">
+                    ▶️ Start Sorting (High to Low)
+                </button>
+                <button id="step-by-step" class="bg-purple-500 hover:bg-purple-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-md">
+                    👣 Step-by-Step Mode
+                </button>
+                <button id="next-step" class="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-md hidden" disabled>
+                    ⏭️ Next Step
+                </button>
+                <button id="stop-btn" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-md" disabled>
+                    ⏹️ Stop
+                </button>
+            </div>
+            
+            <div class="flex flex-wrap justify-center items-center gap-6">
+                <div class="flex items-center gap-2">
+                    <label class="text-sm font-medium text-gray-700">Speed:</label>
+                    <input type="range" id="speed-slider" min="500" max="3000" value="1500" class="w-24">
+                    <span id="speed-display" class="text-sm text-gray-600">Medium</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <label class="text-sm font-medium text-gray-700">Array Size:</label>
+                    <input type="range" id="size-slider" min="8" max="16" value="10" class="w-24">
+                    <span id="size-display" class="text-sm text-gray-600">10</span>
+                </div>
+                <button id="sound-toggle" class="p-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors">
+                    <span id="sound-icon">🔇</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="step-explanation" class="step-explanation">
+            <h3 class="text-xl font-bold mb-3">📚 Ready to Learn Shell Sort!</h3>
+            <p class="text-lg opacity-90">
+                Click "Generate New Array" to create random product ratings, then start sorting to see the magic happen!
+            </p>
+        </div>
+
+        <div id="array-container" class="grid-container"></div>
+
+        <div class="mt-8 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-8">
+            <div class="space-y-8">
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">⭐ A Deeper Look at Shell Sort</h3>
+                    <p class="text-gray-700 leading-relaxed">
+                        Shell Sort is an efficient sorting algorithm that improves upon Insertion Sort by comparing and swapping elements that are far apart, progressively reducing the distance between them. Think of it like sorting a very messy deck of cards. Instead of comparing one card to the next, you first break the deck into, say, 5 smaller piles and sort each of those piles (a <strong>large gap</strong>). Then you combine them, break them into 2 piles, and sort those (a <strong>smaller gap</strong>). Finally, with the cards now roughly in order, you do one final pass comparing adjacent cards (a <strong>gap of 1</strong>). This "rough-sorting" first moves items to their correct general position much more quickly.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">📈 Sorting Ratings: Why Descending Order?</h3>
+                    <p class="text-gray-700 leading-relaxed mb-4">
+                        When you sort products on a website, you want the ones with the <strong>best ratings (the highest numbers)</strong> to appear at the top of the list. This requires sorting in <strong>descending order</strong> (from largest to smallest). The logic of the sort is slightly changed to achieve this. The core comparison asks:
+                    </p>
+                    <p class="text-gray-700 leading-relaxed">
+                        Is the product rating behind me <strong>less than</strong> my current product's rating? If yes, it needs to be moved out of the way.
+                    </p>
+                    <p class="text-gray-700 leading-relaxed mt-2">
+                        For example, if our current product has a rating of <strong>92</strong> and we are comparing it to a product `gap` positions behind it with a rating of <strong>78</strong>, the logic says, "92 is greater than 78." Therefore, the lower-rated product (78) is shifted forward to make room for the higher-rated product (92) to move up the list.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const arrayContainer = document.getElementById('array-container');
+        const generateBtn = document.getElementById('generate-btn');
+        const startSortBtn = document.getElementById('start-sort');
+        const stepByStepBtn = document.getElementById('step-by-step');
+        const nextStepBtn = document.getElementById('next-step');
+        const stopBtn = document.getElementById('stop-btn');
+        const speedSlider = document.getElementById('speed-slider');
+        const sizeSlider = document.getElementById('size-slider');
+        const speedDisplay = document.getElementById('speed-display');
+        const sizeDisplay = document.getElementById('size-display');
+        const soundToggle = document.getElementById('sound-toggle');
+        const soundIcon = document.getElementById('sound-icon');
+        const stepExplanation = document.getElementById('step-explanation');
+        const playIntroBtn = document.getElementById('play-intro-btn');
+        const playGapBtn = document.getElementById('play-gap-btn');
+
+        // State variables
+        let array = [];
+        let isSorting = false;
+        let shouldStop = false;
+        let isStepMode = false;
+        let isMuted = true;
+
+        // Audio & Speech contexts
+        let audioContext;
+        let synthesis;
+        let hindiVoice = null;
+        
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) { console.log('Audio not supported'); }
+        }
+        
+        function initSpeech() {
+            if ('speechSynthesis' in window) {
+                synthesis = window.speechSynthesis;
+                const getVoices = () => {
+                    const voices = synthesis.getVoices();
+                    hindiVoice = voices.find(voice => voice.lang === 'hi-IN') || voices.find(voice => voice.lang.startsWith('hi'));
+                };
+                getVoices();
+                if (synthesis.onvoiceschanged !== undefined) {
+                    synthesis.onvoiceschanged = getVoices;
+                }
+            } else { console.log('Speech Synthesis not supported'); }
+        }
+
+        function speak(text) {
+            if (isMuted || !synthesis || !text) return;
+
+            synthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            
+            if (hindiVoice) {
+                utterance.voice = hindiVoice;
+                utterance.lang = 'hi-IN';
+            }
+            utterance.rate = 0.95;
+            utterance.pitch = 1.0;
+            
+            synthesis.speak(utterance);
+        }
+
+        function playIntroduction() {
+            const introText = `Namaste! Shell Sort Learning Platform mein aapka swagat hai. Shell Sort, insertion sort ka ek supercharged version hai. Iski khaas baat 'gap' hai. Hum pehle door-door ke elements ko sort karte hain, jisse bade elements jaldi apni sahi jagah ke paas aa jaate hain. Phir, hum gap ko chhota karte jaate hain aur nazdeek ke elements ko sort karte hain. Aakhir mein, jab gap 1 ho jaata hai, to array lagbhag sorted hota hai, aur ek simple sa insertion sort kaam poora kar deta hai.`;
+            speak(introText);
+        }
+
+        function playGapExplanation() {
+            const gapText = `Aap soch rahe honge ki ye 'gap' kaise chuna jaata hai? Iska formula hai 'gap barabar floor function, size divide by 2'. Floor ka matlab hai ki hum hamesha decimal ke baad waale number ko ignore karte hain. Jaise, agar array ka size 7 hai, to 7 ko 2 se divide karne par 3 point 5 aata hai, to hum gap 3 lenge. Har round ke baad, hum pichle gap ko isi formula se aadha karte jaate hain. Jaise 5 ka aadha 2 point 5 hota hai, to agla gap 2 hoga. Aur phir 2 ka aadha 1.`;
+            speak(gapText);
+        }
+
+        function playTone(frequency, duration) {
+            if (isMuted || !audioContext) return;
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration / 1000);
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + duration / 1000);
+        }
+
+        function updateSliderDisplays() {
+            const speed = parseInt(speedSlider.value);
+            speedDisplay.textContent = speed > 2500 ? 'Super Slow' : speed > 1800 ? 'Slow' : speed > 1000 ? 'Medium' : 'Fast';
+            sizeDisplay.textContent = sizeSlider.value;
+        }
+
+        function generateArray() {
+            if (isSorting) return;
+            
+            const size = parseInt(sizeSlider.value);
+            array = Array.from({ length: size }, (_, i) => ({
+                value: Math.floor(Math.random() * 90) + 10,
+                name: `Product #${i + 1}`
+            }));
+            
+            renderArray();
+            updateExplanation(
+                'New product ratings generated! Click "Start Sorting" to arrange them from highest to lowest.',
+                'Naye product ratings ban gaye hain! "Start Sorting" button dabakar inhein sabse zyada se sabse kam rating tak sort karein.',
+                '🎲'
+            );
+        }
+
+        function renderArray(highlightStates = {}) {
+            const cols = Math.min(array.length, 8);
+            arrayContainer.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            
+            arrayContainer.innerHTML = array.map((item, index) => {
+                let classes = 'grid-item';
+                if (highlightStates.comparing?.includes(index)) classes += ' comparing';
+                if (highlightStates.swapping?.includes(index)) classes += ' swapping';
+                if (highlightStates.gapHighlight?.includes(index)) classes += ' gap-highlight';
+                if (highlightStates.current?.includes(index)) classes += ' current-element';
+                if (highlightStates.sorted?.includes(index)) classes += ' sorted-item';
+
+                let gapIndicator = '';
+                if (highlightStates.gapHighlight?.includes(index) && highlightStates.currentGap > 0) {
+                    gapIndicator = `<div class="gap-indicator">Gap: ${highlightStates.currentGap}</div>`;
+                }
+
+                return `
+                    <div class="${classes}" id="item-${index}">
+                        ${gapIndicator}
+                        <div class="item-value">${item.value}</div>
+                        <div class="item-index">${item.name}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateExplanation(englishText, hinglishText, emoji = '📚') {
+            let title = isStepMode ? `Step Explanation` : 'Shell Sort in Action';
+            stepExplanation.innerHTML = `
+                <h3 class="text-xl font-bold mb-3">${emoji} ${title}</h3>
+                <p class="text-lg opacity-90">${englishText}</p>
+            `;
+            speak(hinglishText);
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function shellSort(stepByStep = false) {
+            if (isSorting) return;
+            
+            isSorting = true;
+            shouldStop = false;
+            isStepMode = stepByStep;
+
+            ['generate-btn', 'start-sort', 'step-by-step'].forEach(id => document.getElementById(id).disabled = true);
+            document.getElementById('stop-btn').disabled = false;
+            if (stepByStep) document.getElementById('next-step').classList.remove('hidden');
+
+            const n = array.length;
+            
+            for (let gap = Math.floor(n / 2); gap > 0; gap = Math.floor(gap / 2)) {
+                if (shouldStop) break;
+
+                updateExplanation(
+                    `Starting new pass with gap = ${gap}. We'll compare elements that are ${gap} positions apart.`,
+                    `Naya pass shuru ho raha hai, gap ${gap} ke saath. Hum ${gap} doori waale elements ko compare karenge.`, '📏'
+                );
+                
+                renderArray({ gapHighlight: Array.from({length: n}, (_, i) => i), currentGap: gap });
+                if (stepByStep) await waitForStep(); else await sleep(parseInt(speedSlider.value));
+                if (shouldStop) break;
+
+                for (let i = gap; i < n; i++) {
+                    if (shouldStop) break;
+                    let temp = array[i];
+                    let j = i;
+
+                    updateExplanation(`Holding product with rating ${temp.value}.`, `Ab hum ${temp.value} rating waale product ko check kar rahe hain.`, '🔍');
+                    renderArray({ current: [i] });
+                    playTone(440, 200);
+                    if (stepByStep) await waitForStep(); else await sleep(parseInt(speedSlider.value));
+                    if (shouldStop) break;
+
+                    // *** CORE LOGIC FOR DESCENDING SORT ***
+                    while (j >= gap && array[j - gap].value < temp.value) {
+                        if (shouldStop) break;
+                        updateExplanation(`Comparing rating ${temp.value} with ${array[j - gap].value}. Since ${temp.value} is higher, we shift the lower rating.`, `Rating ${temp.value} ko ${array[j - gap].value} se compare kar rahe hain. Kyunki ${temp.value} zyada hai, isliye hum kam rating waale ko shift karenge.`, '⚖️');
+                        renderArray({ comparing: [j, j - gap] });
+                        playTone(660, 150);
+                        if (stepByStep) await waitForStep(); else await sleep(parseInt(speedSlider.value));
+                        if (shouldStop) break;
+
+                        array[j] = array[j - gap];
+                        renderArray({ swapping: [j] });
+                        playTone(880, 100);
+                        if (stepByStep) await waitForStep(); else await sleep(parseInt(speedSlider.value) / 2);
+                        j -= gap;
+                    }
+                    array[j] = temp;
+                    if (j !== i) renderArray({ swapping: [j] });
+                }
+            }
+            
+            if (!shouldStop) {
+                updateExplanation('Sorting complete! Products are now sorted by rating from highest to lowest.', 'Sorting poori ho gayi! Products ab sabse zyada se sabse kam rating tak sort ho gaye hain.', '🎉');
+                renderArray({ sorted: Array.from({length: n}, (_, i) => i) });
+                playTone(523, 500);
+            } else {
+                updateExplanation('Shell Sort stopped by user.', 'Sorting rok di gayi hai.', '⏹️');
+                renderArray();
+            }
+            
+            isSorting = false;
+            ['generate-btn', 'start-sort', 'step-by-step'].forEach(id => document.getElementById(id).disabled = false);
+            document.getElementById('stop-btn').disabled = true;
+            document.getElementById('next-step').classList.add('hidden');
+        }
+
+        async function waitForStep() {
+            nextStepBtn.disabled = false;
+            return new Promise(resolve => {
+                const handler = () => {
+                    nextStepBtn.removeEventListener('click', handler);
+                    resolve();
+                };
+                nextStepBtn.addEventListener('click', handler);
+            });
+        }
+
+        // Event Listeners
+        generateBtn.addEventListener('click', generateArray);
+        startSortBtn.addEventListener('click', () => shellSort(false));
+        stepByStepBtn.addEventListener('click', () => shellSort(true));
+        playIntroBtn.addEventListener('click', playIntroduction);
+        playGapBtn.addEventListener('click', playGapExplanation);
+        
+        stopBtn.addEventListener('click', () => {
+            shouldStop = true;
+            if (synthesis) synthesis.cancel();
+            document.getElementById('next-step').classList.add('hidden');
+        });
+        
+        speedSlider.addEventListener('input', updateSliderDisplays);
+        sizeSlider.addEventListener('input', () => {
+            updateSliderDisplays();
+            if (!isSorting) generateArray();
+        });
+        
+        soundToggle.addEventListener('click', () => {
+            isMuted = !isMuted;
+            soundIcon.textContent = isMuted ? '🔇' : '🔊';
+            if (!isMuted && !audioContext) initAudio();
+            if (isMuted && synthesis) synthesis.cancel();
+        });
+
+        // Initialize
+        window.addEventListener('load', () => {
+            updateSliderDisplays();
+            generateArray();
+            initAudio();
+            initSpeech();
+        });
+    </script>
+</body>
+</html>
